@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     //前方向の速度
     private float velocityZ = 16f;
     //横方向の速度
-    private float velocityX = 8f;
+    private float velocityX = 12f;
     //上方向の速度
     private float velocityY = 4f;
     //横方向の移動量
@@ -34,6 +34,18 @@ public class PlayerController : MonoBehaviour
     private float atkdelta = 0;
     //BoxColiderコンポーネントを入れる
     private BoxCollider atkCollider;
+    //Score
+    private GameObject score;
+    //Bossオブジェクト
+    private GameObject BossCube;
+    //BossのHP（仮）
+    private int BossHP = 3;
+    //playerの攻撃力（仮）
+    private int playeratk = 1;
+    //ゴール位置
+    private float goalpos;
+    //boss戦闘中状態
+    public bool bossbattlestate = false; 
 
 
     // Start is called before the first frame update
@@ -54,6 +66,15 @@ public class PlayerController : MonoBehaviour
 
         //BoxColiderコンポーネントを取得
         this.atkCollider = GetComponent<BoxCollider>();
+
+        //Score
+        this.score = GameObject.Find("ScoreDirector");
+
+        //Boss
+        this.BossCube = GameObject.Find("BossCube");
+
+        //ゴール位置
+        this.goalpos = BossCube.transform.position.z;
 
     }
 
@@ -101,7 +122,8 @@ public class PlayerController : MonoBehaviour
 
 
         //ジャンプ
-        if (Input.GetKeyDown(KeyCode.UpArrow) && this.transform.position.y < 0.06f && this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"))
+        if (Input.GetKeyDown(KeyCode.UpArrow) &&
+            (this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion") || this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle")))
         {
             //ジャンプアニメを再生
             this.myAnimator.SetBool("Jump", true);
@@ -115,7 +137,8 @@ public class PlayerController : MonoBehaviour
         }
 
         //スライディング
-        if (Input.GetKeyDown(KeyCode.DownArrow) && this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"))
+        if (Input.GetKeyDown(KeyCode.DownArrow) &&
+            (this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion") || this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle")))
         {
             //スライドアニメを再生
             this.myAnimator.SetBool("Slide", true);
@@ -135,7 +158,8 @@ public class PlayerController : MonoBehaviour
         }
 
         //攻撃
-        if (Input.GetKeyDown(KeyCode.Space) && this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion"))
+        if (Input.GetKeyDown(KeyCode.Space) && 
+            (this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Locomotion") || this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle")))
         {
             atkCollider.enabled = true;
             this.atkdelta += Time.deltaTime;
@@ -150,6 +174,15 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //ボス前は停止
+        if (this.transform.position.z - goalpos >= -5)
+        {
+            this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, goalpos - 5);
+            velocityZ = 0;
+            this.myAnimator.SetFloat("Speed", 0);
+            this.bossbattlestate = true;
+        }
+        
 
         //Jumpステートの場合はJumpにfalseをセットする
         if (this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
@@ -166,9 +199,24 @@ public class PlayerController : MonoBehaviour
         this.myRigidbody.velocity = new Vector3(inputVelocityX, inputVelocityY, velocityZ);
     }
 
+    //攻撃当たったとき
     void OnTriggerEnter(Collider other)
     {
-        Destroy(other.gameObject);
+        if(other.gameObject.tag == "enemy1")
+        {
+            this.score.GetComponent<ScoreController>().DefeatEnemy();
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.tag == "Boss")
+        {
+            BossHP -= playeratk;
+
+            if (BossHP <= 0)
+            {
+                this.score.GetComponent<ScoreController>().DefeatBoss();
+                Destroy(other.gameObject);
+            }
+        }
     }
 
 }
