@@ -216,7 +216,7 @@ GameObject:
   - component: {fileID: 361470699}
   - component: {fileID: 361470698}
   m_Layer: 5
-  m_Name: Press Start
+  m_Name: Press Space
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press Start
+  m_Text: Press Space
 --- !u!222 &361470699
 CanvasRenderer:
   m_ObjectHideFlags: 0

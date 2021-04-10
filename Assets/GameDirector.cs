@@ -16,8 +16,16 @@ public class GameDirector : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            SceneManager.LoadScene("Stage0Scene");
-            Debug.Log("stage0");
+            Reload();
         }
     }
+
+    public void Reload()
+    {
+        SceneManager.LoadScene("Stage0Scene");
+        Debug.Log("stage0");
+    }
+
+    
+
 }

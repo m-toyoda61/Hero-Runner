@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
         this.myRigidbody.velocity = new Vector3(inputVelocityX, inputVelocityY, velocityZ);
     }
 
-    //攻撃当たったとき
+    //攻撃当てたとき
     void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "enemy1")
@@ -210,6 +210,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Boss")
         {
             BossHP -= playeratk;
+            Debug.Log(BossHP);
 
             if (BossHP <= 0)
             {
